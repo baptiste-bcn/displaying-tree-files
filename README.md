@@ -8,3 +8,4 @@ Implemented features :
 - 2. Add a checksum for each file
 - 3. Add ability to open file in right click context menu
 - 4. Compare mapping system
+- 5. Add an icon to the executable file that appears in the file manager
