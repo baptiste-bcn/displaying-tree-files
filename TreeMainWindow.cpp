@@ -19,6 +19,11 @@
 TreeMainWindow::TreeMainWindow(QWidget *p_Parent)
     : QMainWindow(p_Parent)
 {
+    QToolBar* toolbar = addToolBar("Outils");
+    toolbar->addAction(QIcon("icon.png"), "Choisir Dossier", this, SLOT(slot_Choisir_Dossier_Racine()));
+    toolbar->addAction("Sauvegarder Cartographie", this, SLOT(slot_Save_TreeMap()));
+    toolbar->addAction("Comparer Dossiers", this, SLOT(slot_Comparer_Cartographies()));
+    toolbar->addAction("Quitter", this, SLOT(slot_QUIT()));
 
     //-- MENU
 
@@ -45,6 +50,7 @@ TreeMainWindow::TreeMainWindow(QWidget *p_Parent)
 
     _TW_Dossier = new TreeWidget(_Splitter);
     _TextEdit = new TextEdit(_Splitter);
+    _TextEdit->setStyleSheet("background-color: #f9f9f9; font-family: Monospace; font-size: 12px;");
     _TextEdit->setReadOnly(true);
 
 #ifdef WIN32
@@ -359,3 +365,32 @@ QString TreeMainWindow::computeChecksum(const QString &filePath)
     hash.addData(&file);
     return hash.result().toHex();
 }
+
+void TreeMainWindow::keyPressEvent(QKeyEvent* event)
+{
+    switch (event->key())
+    {
+        case Qt::Key_F1:
+            QMessageBox::information(this, "Aide", "F2 : Recharger\nF3 : Ouvrir le fichier sélectionné\n\nClic droit : Menu contextuel");
+            break;
+        case Qt::Key_F2:
+            this->Choisir_Dossier_Racine(_Path_Dossier_Racine);
+            break;
+        case Qt::Key_F3:
+        {
+            QTreeWidgetItem* currentItem = _TW_Dossier->currentItem();
+            if (currentItem)
+            {
+                QString path = _TW_Dossier->Get_PathName(currentItem);
+                if (QFileInfo(path).isFile())
+                {
+                    QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+                }
+            }
+            break;
+        }
+        default:
+            QMainWindow::keyPressEvent(event);
+    }
+}
+

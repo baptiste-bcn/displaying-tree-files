@@ -32,6 +32,7 @@ public slots:
   void slot_QUIT();
 
 protected:
+  void keyPressEvent(QKeyEvent* event) override;
   QString _Path_Dossier_Racine;
 
   QMenu *_Menu;
@@ -40,6 +41,7 @@ protected:
 
   TreeWidget *_TW_Dossier;
   TextEdit *_TextEdit;
+  
 
 private:
   QMap<QString, QString> buildDirectoryMap(const QString &rootPath);
