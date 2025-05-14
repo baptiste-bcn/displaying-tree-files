@@ -44,6 +44,7 @@ public slots:
 
 private:
   void Save_ItemRecursive(QTreeWidgetItem* item, QTextStream& out); // OK ✅
+  QString ComputeChecksum(const QString& filePath); // <-- AJOUTÉ
 
 };
 #endif
