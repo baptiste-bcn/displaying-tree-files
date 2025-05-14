@@ -8,6 +8,7 @@
 
 #include "TreeMainWindow.h"
 #include "TreeWidget.h"
+#include <QCryptographicHash>
 
 #include "FileOpen.xpm"
 #include "FileSave.xpm"
@@ -24,7 +25,7 @@ TreeMainWindow::TreeMainWindow(QWidget *p_Parent)
     _Menu = new QMenu(this);
     _Menu->setTitle("&Fichier");
     _Menu->addAction(QPixmap((const char **)FileSave), "Enregistrer Cartographie", this, SLOT(slot_Save_TreeMap()), Qt::ALT | Qt::Key_E);
-
+    _Menu->addAction("Comparer Cartographies", this, SLOT(slot_Comparer_Cartographies()), Qt::ALT | Qt::Key_C);
 
     this->menuBar()->addMenu(_Menu);
 
@@ -100,10 +101,12 @@ void TreeMainWindow::Statut_Fichier(QString p_Path)
     QString infoDate = QString("Modifié le %1 à %2").arg(qDate).arg(qTime);
 
     QString infoSize;
-    if (qFI.isFile()) {
+    if (qFI.isFile())
+    {
         infoSize = QString(" | Taille: %1 octets").arg(qFI.size());
     }
-    else if (qFI.isDir()) {
+    else if (qFI.isDir())
+    {
         QDir dir(p_Path);
         QFileInfoList list = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
         int nbFiles = list.size();
@@ -176,7 +179,8 @@ void TreeMainWindow::slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_Item, int
 
     FI_Path.setCaching(false);
 
-    while (FI_Path.isSymLink()) {
+    while (FI_Path.isSymLink())
+    {
         PathName = FI_Path.symLinkTarget();
         FI_Path.setFile(PathName);
     }
@@ -262,3 +266,96 @@ void TreeMainWindow::slot_Save_TreeMap()
     }
 }
 
+void TreeMainWindow::slot_Comparer_Cartographies()
+{
+    QString dir1 = QFileDialog::getExistingDirectory(this, "Choisir le premier dossier");
+    if (dir1.isEmpty())
+        return;
+
+    QString dir2 = QFileDialog::getExistingDirectory(this, "Choisir le deuxième dossier");
+    if (dir2.isEmpty())
+        return;
+
+    QMap<QString, QString> map1 = buildDirectoryMap(dir1);
+    QMap<QString, QString> map2 = buildDirectoryMap(dir2);
+
+    QString result;
+
+    // Fichiers supprimés (présents dans dir1 mais pas dir2)
+    for (const QString &path : map1.keys())
+    {
+        if (!map2.contains(path))
+        {
+            result += "Supprimé : " + path + "\n";
+        }
+    }
+
+    // Fichiers ajoutés (présents dans dir2 mais pas dir1)
+    for (const QString &path : map2.keys())
+    {
+        if (!map1.contains(path))
+        {
+            result += "Ajouté : " + path + "\n";
+        }
+    }
+
+    // Fichiers modifiés
+    for (const QString &path : map1.keys())
+    {
+        if (map2.contains(path))
+        {
+            if (map1[path] != map2[path])
+            {
+                result += "Modifié : " + path + "\n";
+            }
+        }
+    }
+
+    if (result.isEmpty())
+    {
+        result = "Aucune différence détectée.";
+    }
+
+    QMessageBox::information(this, "Résultat Comparaison", result);
+}
+
+QMap<QString, QString> TreeMainWindow::buildDirectoryMap(const QString &rootPath)
+{
+    QMap<QString, QString> map;
+
+    QDir dir(rootPath);
+    QFileInfoList list = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot, QDir::DirsFirst);
+
+    for (const QFileInfo &fi : list)
+    {
+        QString relativePath = fi.absoluteFilePath().mid(rootPath.length());
+
+        if (fi.isDir())
+        {
+            // Recurse into subdirectories
+            QMap<QString, QString> childMap = buildDirectoryMap(fi.absoluteFilePath());
+            for (auto it = childMap.begin(); it != childMap.end(); ++it)
+            {
+                map.insert(relativePath + it.key(), it.value());
+            }
+        }
+        else if (fi.isFile())
+        {
+            QString checksum = computeChecksum(fi.absoluteFilePath());
+            map.insert(relativePath, checksum);
+        }
+    }
+
+    return map;
+}
+
+QString TreeMainWindow::computeChecksum(const QString &filePath)
+{
+    QFile file(filePath);
+    if (!file.open(QIODevice::ReadOnly))
+        return QString();
+
+    QCryptographicHash hash(QCryptographicHash::Sha256);
+    hash.addData(&file);
+    return hash.result().toHex();
+}
