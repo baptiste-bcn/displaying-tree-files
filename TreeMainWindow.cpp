@@ -168,21 +168,15 @@ void TreeMainWindow::slot_Statut_Fichier(QString p_Path)
 //
 void TreeMainWindow::slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_Item, int)
 {
-    QMenu PopupM("PopupMenu TreeView");
-
     if (!p_Item)
-    {
         return;
-    }
 
     QString PathName = _TW_Dossier->Get_PathName(p_Item);
-
     QFileInfo FI_Path(PathName);
 
     FI_Path.setCaching(false);
 
-    while (FI_Path.isSymLink())
-    {
+    while (FI_Path.isSymLink()) {
         PathName = FI_Path.symLinkTarget();
         FI_Path.setFile(PathName);
     }
@@ -190,51 +184,50 @@ void TreeMainWindow::slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_Item, int
     if (PathName.isEmpty())
         return;
 
+    QMenu PopupM("PopupMenu TreeView");
+
     QAction *X_Action_DIR = NULL;
     QAction *X_Action_TXT = NULL;
+    QAction *X_Action_Open = NULL;
 
     if (FI_Path.isDir())
     {
-
-        X_Action_DIR = PopupM.addAction(QString("Ouvrir ce dossier"));
+        X_Action_DIR = PopupM.addAction("Ouvrir ce dossier");
     }
     else if (FI_Path.isFile())
     {
+        // TOUJOURS ajouter "Ouvrir avec application système"
+        X_Action_Open = PopupM.addAction("Ouvrir avec l'application système");
 
+        // EN PLUS, ajouter "Afficher" si fichier texte connu
         QString SFX = QString(".%1;").arg(FI_Path.suffix());
 
-        if (QString(".cpp;.h;.xpm;.pro;").contains(SFX.toLower()))
+        if (QString(".cpp;.h;.xpm;.pro;.txt;").contains(SFX.toLower()))
         {
-            X_Action_TXT = PopupM.addAction(QString("Afficher le fichier"));
+            X_Action_TXT = PopupM.addAction("Afficher le fichier");
         }
-    }
-    else
-    {
-        return;
     }
 
     QPoint PM_Point = QCursor::pos() + QPoint(12, 8);
-
     QAction *ACT_x = PopupM.exec(PM_Point);
 
-    if (ACT_x == NULL)
-    {
+    if (!ACT_x)
         return;
-    }
 
     if (ACT_x == X_Action_DIR)
     {
         this->Choisir_Dossier_Racine(PathName);
     }
-
-    if (ACT_x == X_Action_TXT)
+    else if (ACT_x == X_Action_Open)
+    {
+        QDesktopServices::openUrl(QUrl::fromLocalFile(PathName));
+    }
+    else if (ACT_x == X_Action_TXT)
     {
         QFile Fd_R(PathName);
-
         if (Fd_R.open(QIODevice::ReadOnly))
         {
             QTextStream TS_R(&Fd_R);
-            // TS_R.setCodec( QTextCodec::codecForName( "UTF-8" );
             QString S_TEXT = TS_R.readAll();
             Fd_R.close();
 
@@ -244,6 +237,7 @@ void TreeMainWindow::slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_Item, int
         }
     }
 }
+
 // >>>> TreeMainWindow::slot_PopupContextMenu_TreeView
 
 //
