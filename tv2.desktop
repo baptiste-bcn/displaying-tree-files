@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=TV2 File Explorer
+Comment=Application pour afficher l'arborescence des dossiers
+Exec=/home/bblancho/Documents/MIAGE/SYS/displaying-tree-files/tv2
+Icon=/home/bblancho/Documents/MIAGE/SYS/displaying-tree-files/qt.png
+Terminal=false
+Type=Application
+Categories=Utility;

@@ -19,6 +19,7 @@ int main(int argc, char **argv)
   TreeMainWindow *Window = new TreeMainWindow();
 
   Window->setWindowTitle(QString::fromUtf8("QTreeWidget List Directory ;)"));
+  Window->setWindowIcon(QIcon("qt.png"));
 
   int BX = 150;
 
@@ -40,7 +41,6 @@ int main(int argc, char **argv)
 
   Window->resize(WW, HH);
   Window->move(BX, BX);
-
   Window->show();
 
   return app.exec();
