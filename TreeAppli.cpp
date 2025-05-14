@@ -12,23 +12,22 @@
 //
 // <<<< main
 //
-int main(int argc, char **argv)
-{
-  QApplication app(argc, argv);
+int main(int argc, char **argv) {
+    QApplication app(argc, argv);
 
-  TreeMainWindow *Window = new TreeMainWindow();
+    TreeMainWindow *Window = new TreeMainWindow();
 
-  Window->setWindowTitle(QString::fromUtf8("QTreeWidget List Directory ;)"));
-  Window->setWindowIcon(QIcon("qt.png"));
+    Window->setWindowTitle(QString::fromUtf8("QTreeWidget List Directory ;)"));
+    Window->setWindowIcon(QIcon("qt.png"));
 
-  int BX = 150;
+    int BX = 150;
 
 #ifdef QT57
 
-  QDesktopWidget *Desktop = QApplication::desktop();
+    QDesktopWidget *Desktop = QApplication::desktop();
 
-  int WW = Desktop->screenGeometry().width() - 2 * BX;
-  int HH = Desktop->screenGeometry().height() - 2 * BX;
+    int WW = Desktop->screenGeometry().width() - 2 * BX;
+    int HH = Desktop->screenGeometry().height() - 2 * BX;
 
 #else
 
@@ -39,10 +38,11 @@ int main(int argc, char **argv)
 
 #endif
 
-  Window->resize(WW, HH);
-  Window->move(BX, BX);
-  Window->show();
+    Window->resize(WW, HH);
+    Window->move(BX, BX);
+    Window->show();
 
-  return app.exec();
+    return app.exec();
 }
+
 // >>>> main

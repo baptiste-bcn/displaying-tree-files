@@ -1,4 +1,4 @@
- //######
+//######
 //## TextEdit.h
 //## ===========
 //## 02.06.2019: Création
@@ -10,14 +10,14 @@
 #include <QtCore>
 #include <QtWidgets>
 
-class TextEdit:public QTextEdit
-{
-  Q_OBJECT
+class TextEdit : public QTextEdit {
+    Q_OBJECT
 
 public:
-  TextEdit( QWidget* p_Parent );
-  ~TextEdit();
+    TextEdit(QWidget *p_Parent);
 
-  void contextMenuEvent( QContextMenuEvent * p_Event );
-  };
+    ~TextEdit();
+
+    void contextMenuEvent(QContextMenuEvent *p_Event);
+};
 #endif

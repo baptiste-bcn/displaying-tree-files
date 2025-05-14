@@ -12,44 +12,51 @@
 #include "TreeWidget.h"
 #include "TextEdit.h"
 
-class TreeMainWindow : public QMainWindow
-{
-  Q_OBJECT
+class TreeMainWindow : public QMainWindow {
+    Q_OBJECT
 
 public:
-  TreeMainWindow(QWidget *p_Parent = 0);
+    TreeMainWindow(QWidget *p_Parent = 0);
 
-  void Choisir_Dossier_Racine(QString p_Dossier);
-  
-  void Statut_Fichier(QString p_Path);
+    void Choisir_Dossier_Racine(QString p_Dossier);
+
+    void Statut_Fichier(QString p_Path);
 
 public slots:
-  void slot_Choisir_Dossier_Racine();
-  void slot_Statut_Fichier(QString p_Path);
-  void slot_Save_TreeMap();
-  void slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_item, int p_Column);
-  void slot_Comparer_Cartographies();
-  void slot_QUIT();
-  void slot_ShowHelp();
-  void slot_Reload();
-  void slot_OpenSelectedFile();
+    void slot_Choisir_Dossier_Racine();
 
+    void slot_Statut_Fichier(QString p_Path);
+
+    void slot_Save_TreeMap();
+
+    void slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_item, int p_Column);
+
+    void slot_Comparer_Cartographies();
+
+    void slot_QUIT();
+
+    void slot_ShowHelp();
+
+    void slot_Reload();
+
+    void slot_OpenSelectedFile();
 
 protected:
-  void keyPressEvent(QKeyEvent* event) override;
-  QString _Path_Dossier_Racine;
+    void keyPressEvent(QKeyEvent *event) override;
 
-  QMenu *_Menu;
+    QString _Path_Dossier_Racine;
 
-  QSplitter *_Splitter;
+    QMenu *_Menu;
 
-  TreeWidget *_TW_Dossier;
-  TextEdit *_TextEdit;
-  
+    QSplitter *_Splitter;
+
+    TreeWidget *_TW_Dossier;
+    TextEdit *_TextEdit;
 
 private:
-  QMap<QString, QString> buildDirectoryMap(const QString &rootPath);
-  QString computeChecksum(const QString &filePath);
+    QMap<QString, QString> buildDirectoryMap(const QString &rootPath);
+
+    QString computeChecksum(const QString &filePath);
 };
 
 #endif

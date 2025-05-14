@@ -17,9 +17,8 @@
 // <<<< TreeMainWindow::TreeMainWindow
 //
 TreeMainWindow::TreeMainWindow(QWidget *p_Parent)
-    : QMainWindow(p_Parent)
-{
-    QToolBar* toolbar = addToolBar("Outils");
+    : QMainWindow(p_Parent) {
+    QToolBar *toolbar = addToolBar("Outils");
     toolbar->addAction(QIcon("icon.png"), "Choisir Dossier", this, SLOT(slot_Choisir_Dossier_Racine()));
     toolbar->addAction("Sauvegarder Cartographie", this, SLOT(slot_Save_TreeMap()));
     toolbar->addAction("Comparer Dossiers", this, SLOT(slot_Comparer_Cartographies()));
@@ -29,12 +28,14 @@ TreeMainWindow::TreeMainWindow(QWidget *p_Parent)
 
     _Menu = new QMenu(this);
     _Menu->setTitle("&Fichier");
-    _Menu->addAction(QPixmap((const char **)FileSave), "Enregistrer Cartographie", this, SLOT(slot_Save_TreeMap()), Qt::ALT | Qt::Key_E);
+    _Menu->addAction(QPixmap((const char **) FileSave), "Enregistrer Cartographie", this, SLOT(slot_Save_TreeMap()),
+                     Qt::ALT | Qt::Key_E);
     _Menu->addAction("Comparer Cartographies", this, SLOT(slot_Comparer_Cartographies()), Qt::ALT | Qt::Key_C);
 
     this->menuBar()->addMenu(_Menu);
 
-    _Menu->addAction(QPixmap((const char **)FileOpen), "Choisir Dossier racine", this, SLOT(slot_Choisir_Dossier_Racine()), Qt::ALT | Qt::Key_S);
+    _Menu->addAction(QPixmap((const char **) FileOpen), "Choisir Dossier racine", this,
+                     SLOT(slot_Choisir_Dossier_Racine()), Qt::ALT | Qt::Key_S);
     _Menu->addAction("Aide (F1)", this, SLOT(slot_ShowHelp()), Qt::Key_F1);
     _Menu->addAction("Recharger (F2)", this, SLOT(slot_Reload()), Qt::Key_F2);
     _Menu->addAction("Ouvrir fichier sélectionné (F3)", this, SLOT(slot_OpenSelectedFile()), Qt::Key_F3);
@@ -70,35 +71,33 @@ TreeMainWindow::TreeMainWindow(QWidget *p_Parent)
     //-- SLOTS
     connect(_TW_Dossier, SIGNAL(SIGNAL_Statut_Fichier(QString)), this, SLOT(slot_Statut_Fichier(QString)));
 
-    connect(_TW_Dossier, SIGNAL(SIGNAL_RightClicked(QTreeWidgetItem *, int)), this, SLOT(slot_PopupContextMenu_TreeView(QTreeWidgetItem *, int)));
+    connect(_TW_Dossier, SIGNAL(SIGNAL_RightClicked(QTreeWidgetItem *, int)), this,
+            SLOT(slot_PopupContextMenu_TreeView(QTreeWidgetItem *, int)));
 }
+
 // >>>> TreeMainWindow::TreeMainWindow
 
 //
 // <<<< TreeMainWindow::Choisir_Dossier_Racine
 //
-void TreeMainWindow::Choisir_Dossier_Racine(QString p_Dossier)
-{
+void TreeMainWindow::Choisir_Dossier_Racine(QString p_Dossier) {
     QFileInfo FI_Racine(p_Dossier);
 
-    if (FI_Racine.isSymLink())
-    {
+    if (FI_Racine.isSymLink()) {
         _Path_Dossier_Racine = FI_Racine.symLinkTarget();
-    }
-    else
-    {
+    } else {
         _Path_Dossier_Racine = p_Dossier;
     }
 
     _TW_Dossier->Add_FirstChild(_Path_Dossier_Racine);
 }
+
 // >>>> TreeMainWindow::Choisir_Dossier_Racine
 
 //
 // <<<< TreeMainWindow::Statut_Fichier
 //
-void TreeMainWindow::Statut_Fichier(QString p_Path)
-{
+void TreeMainWindow::Statut_Fichier(QString p_Path) {
     QFileInfo qFI(p_Path);
 
     QDate mDate = qFI.lastModified().date();
@@ -110,12 +109,9 @@ void TreeMainWindow::Statut_Fichier(QString p_Path)
     QString infoDate = QString("Modifié le %1 à %2").arg(qDate).arg(qTime);
 
     QString infoSize;
-    if (qFI.isFile())
-    {
+    if (qFI.isFile()) {
         infoSize = QString(" | Taille: %1 octets").arg(qFI.size());
-    }
-    else if (qFI.isDir())
-    {
+    } else if (qFI.isDir()) {
         QDir dir(p_Path);
         QFileInfoList list = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot);
         int nbFiles = list.size();
@@ -132,8 +128,7 @@ void TreeMainWindow::Statut_Fichier(QString p_Path)
 //
 // <<<< TreeMainWindow::slot_Choisir_Dossier_Racine
 //
-void TreeMainWindow::slot_Choisir_Dossier_Racine()
-{
+void TreeMainWindow::slot_Choisir_Dossier_Racine() {
     QFileDialog F_Dialog(this);
 
 #ifdef QT57
@@ -159,27 +154,26 @@ void TreeMainWindow::slot_Choisir_Dossier_Racine()
 
     QString qDIR = F_Dialog.getExistingDirectory(this, "Sélection Dossier Source");
 
-    if (!qDIR.isEmpty())
-    {
+    if (!qDIR.isEmpty()) {
         Choisir_Dossier_Racine(qDIR);
     }
 }
+
 // >>>> TreeMainWindow::slot_Choisir_Dossier_Racine
 
 //
 // <<<< TreeMainWindow::slot_Statut_Fichier
 //
-void TreeMainWindow::slot_Statut_Fichier(QString p_Path)
-{
+void TreeMainWindow::slot_Statut_Fichier(QString p_Path) {
     this->Statut_Fichier(p_Path);
 }
+
 // >>>> TreeMainWindow::slot_Statut_Fichier
 
 //
 // <<<< TreeMainWindow::slot_PopupContextMenu_TreeView
 //
-void TreeMainWindow::slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_Item, int)
-{
+void TreeMainWindow::slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_Item, int) {
     if (!p_Item)
         return;
 
@@ -188,8 +182,7 @@ void TreeMainWindow::slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_Item, int
 
     FI_Path.setCaching(false);
 
-    while (FI_Path.isSymLink())
-    {
+    while (FI_Path.isSymLink()) {
         PathName = FI_Path.symLinkTarget();
         FI_Path.setFile(PathName);
     }
@@ -203,20 +196,16 @@ void TreeMainWindow::slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_Item, int
     QAction *X_Action_TXT = NULL;
     QAction *X_Action_Open = NULL;
 
-    if (FI_Path.isDir())
-    {
+    if (FI_Path.isDir()) {
         X_Action_DIR = PopupM.addAction("Ouvrir ce dossier");
-    }
-    else if (FI_Path.isFile())
-    {
+    } else if (FI_Path.isFile()) {
         // TOUJOURS ajouter "Ouvrir avec application système"
         X_Action_Open = PopupM.addAction("Ouvrir avec l'application système");
 
         // EN PLUS, ajouter "Afficher" si fichier texte connu
         QString SFX = QString(".%1;").arg(FI_Path.suffix());
 
-        if (QString(".cpp;.h;.xpm;.pro;.txt;").contains(SFX.toLower()))
-        {
+        if (QString(".cpp;.h;.xpm;.pro;.txt;").contains(SFX.toLower())) {
             X_Action_TXT = PopupM.addAction("Afficher le fichier");
         }
     }
@@ -227,19 +216,13 @@ void TreeMainWindow::slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_Item, int
     if (!ACT_x)
         return;
 
-    if (ACT_x == X_Action_DIR)
-    {
+    if (ACT_x == X_Action_DIR) {
         this->Choisir_Dossier_Racine(PathName);
-    }
-    else if (ACT_x == X_Action_Open)
-    {
+    } else if (ACT_x == X_Action_Open) {
         QDesktopServices::openUrl(QUrl::fromLocalFile(PathName));
-    }
-    else if (ACT_x == X_Action_TXT)
-    {
+    } else if (ACT_x == X_Action_TXT) {
         QFile Fd_R(PathName);
-        if (Fd_R.open(QIODevice::ReadOnly))
-        {
+        if (Fd_R.open(QIODevice::ReadOnly)) {
             QTextStream TS_R(&Fd_R);
             QString S_TEXT = TS_R.readAll();
             Fd_R.close();
@@ -256,27 +239,24 @@ void TreeMainWindow::slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_Item, int
 //
 // <<<< TreeMainWindow::slot_QUIT
 //
-void TreeMainWindow::slot_QUIT()
-{
+void TreeMainWindow::slot_QUIT() {
     //--  ? Enregistrer_Arborescence( QString p_PathFichier )
 
     qApp->quit();
 }
+
 // >>>> TreeMainWindow::slot_QUIT
 
-void TreeMainWindow::slot_Save_TreeMap()
-{
+void TreeMainWindow::slot_Save_TreeMap() {
     QString filePath = QFileDialog::getSaveFileName(this, "Enregistrer la cartographie", "", "Fichiers Texte (*.txt)");
 
-    if (!filePath.isEmpty())
-    {
+    if (!filePath.isEmpty()) {
         _TW_Dossier->Save_TreeMap(filePath);
         statusBar()->showMessage("Cartographie enregistrée dans " + filePath, 5000);
     }
 }
 
-void TreeMainWindow::slot_Comparer_Cartographies()
-{
+void TreeMainWindow::slot_Comparer_Cartographies() {
     QString dir1 = QFileDialog::getExistingDirectory(this, "Choisir le premier dossier");
     if (dir1.isEmpty())
         return;
@@ -291,65 +271,51 @@ void TreeMainWindow::slot_Comparer_Cartographies()
     QString result;
 
     // Fichiers supprimés (présents dans dir1 mais pas dir2)
-    for (const QString &path : map1.keys())
-    {
-        if (!map2.contains(path))
-        {
+    for (const QString &path: map1.keys()) {
+        if (!map2.contains(path)) {
             result += "Supprimé : " + path + "\n";
         }
     }
 
     // Fichiers ajoutés (présents dans dir2 mais pas dir1)
-    for (const QString &path : map2.keys())
-    {
-        if (!map1.contains(path))
-        {
+    for (const QString &path: map2.keys()) {
+        if (!map1.contains(path)) {
             result += "Ajouté : " + path + "\n";
         }
     }
 
     // Fichiers modifiés
-    for (const QString &path : map1.keys())
-    {
-        if (map2.contains(path))
-        {
-            if (map1[path] != map2[path])
-            {
+    for (const QString &path: map1.keys()) {
+        if (map2.contains(path)) {
+            if (map1[path] != map2[path]) {
                 result += "Modifié : " + path + "\n";
             }
         }
     }
 
-    if (result.isEmpty())
-    {
+    if (result.isEmpty()) {
         result = "Aucune différence détectée.";
     }
 
     QMessageBox::information(this, "Résultat Comparaison", result);
 }
 
-QMap<QString, QString> TreeMainWindow::buildDirectoryMap(const QString &rootPath)
-{
+QMap<QString, QString> TreeMainWindow::buildDirectoryMap(const QString &rootPath) {
     QMap<QString, QString> map;
 
     QDir dir(rootPath);
     QFileInfoList list = dir.entryInfoList(QDir::Files | QDir::Dirs | QDir::NoDotAndDotDot, QDir::DirsFirst);
 
-    for (const QFileInfo &fi : list)
-    {
+    for (const QFileInfo &fi: list) {
         QString relativePath = fi.absoluteFilePath().mid(rootPath.length());
 
-        if (fi.isDir())
-        {
+        if (fi.isDir()) {
             // Recurse into subdirectories
             QMap<QString, QString> childMap = buildDirectoryMap(fi.absoluteFilePath());
-            for (auto it = childMap.begin(); it != childMap.end(); ++it)
-            {
+            for (auto it = childMap.begin(); it != childMap.end(); ++it) {
                 map.insert(relativePath + it.key(), it.value());
             }
-        }
-        else if (fi.isFile())
-        {
+        } else if (fi.isFile()) {
             QString checksum = computeChecksum(fi.absoluteFilePath());
             map.insert(relativePath, checksum);
         }
@@ -358,8 +324,7 @@ QMap<QString, QString> TreeMainWindow::buildDirectoryMap(const QString &rootPath
     return map;
 }
 
-QString TreeMainWindow::computeChecksum(const QString &filePath)
-{
+QString TreeMainWindow::computeChecksum(const QString &filePath) {
     QFile file(filePath);
     if (!file.open(QIODevice::ReadOnly))
         return QString();
@@ -369,24 +334,20 @@ QString TreeMainWindow::computeChecksum(const QString &filePath)
     return hash.result().toHex();
 }
 
-void TreeMainWindow::keyPressEvent(QKeyEvent* event)
-{
-    switch (event->key())
-    {
+void TreeMainWindow::keyPressEvent(QKeyEvent *event) {
+    switch (event->key()) {
         case Qt::Key_F1:
-            QMessageBox::information(this, "Aide", "F2 : Recharger\nF3 : Ouvrir le fichier sélectionné\n\nClic droit : Menu contextuel");
+            QMessageBox::information(this, "Aide",
+                                     "F2 : Recharger\nF3 : Ouvrir le fichier sélectionné\n\nClic droit : Menu contextuel");
             break;
         case Qt::Key_F2:
             this->Choisir_Dossier_Racine(_Path_Dossier_Racine);
             break;
-        case Qt::Key_F3:
-        {
-            QTreeWidgetItem* currentItem = _TW_Dossier->currentItem();
-            if (currentItem)
-            {
+        case Qt::Key_F3: {
+            QTreeWidgetItem *currentItem = _TW_Dossier->currentItem();
+            if (currentItem) {
                 QString path = _TW_Dossier->Get_PathName(currentItem);
-                if (QFileInfo(path).isFile())
-                {
+                if (QFileInfo(path).isFile()) {
                     QDesktopServices::openUrl(QUrl::fromLocalFile(path));
                 }
             }
@@ -397,35 +358,25 @@ void TreeMainWindow::keyPressEvent(QKeyEvent* event)
     }
 }
 
-void TreeMainWindow::slot_ShowHelp()
-{
-    QMessageBox::information(this, "Aide", "F1 : Aide\nF2 : Recharger le dossier racine\nF3 : Ouvrir le fichier sélectionné");
+void TreeMainWindow::slot_ShowHelp() {
+    QMessageBox::information(this, "Aide",
+                             "F1 : Aide\nF2 : Recharger le dossier racine\nF3 : Ouvrir le fichier sélectionné");
 }
 
-void TreeMainWindow::slot_Reload()
-{
+void TreeMainWindow::slot_Reload() {
     this->Choisir_Dossier_Racine(_Path_Dossier_Racine);
 }
 
-void TreeMainWindow::slot_OpenSelectedFile()
-{
-    QTreeWidgetItem* currentItem = _TW_Dossier->currentItem();
-    if (currentItem)
-    {
+void TreeMainWindow::slot_OpenSelectedFile() {
+    QTreeWidgetItem *currentItem = _TW_Dossier->currentItem();
+    if (currentItem) {
         QString path = _TW_Dossier->Get_PathName(currentItem);
-        if (QFileInfo(path).isFile())
-        {
+        if (QFileInfo(path).isFile()) {
             QDesktopServices::openUrl(QUrl::fromLocalFile(path));
-        }
-        else
-        {
+        } else {
             QMessageBox::warning(this, "Erreur", "L'élément sélectionné n'est pas un fichier.");
         }
-    }
-    else
-    {
+    } else {
         QMessageBox::warning(this, "Erreur", "Aucun fichier sélectionné.");
     }
 }
-
-
