@@ -35,6 +35,9 @@ TreeMainWindow::TreeMainWindow(QWidget *p_Parent)
     this->menuBar()->addMenu(_Menu);
 
     _Menu->addAction(QPixmap((const char **)FileOpen), "Choisir Dossier racine", this, SLOT(slot_Choisir_Dossier_Racine()), Qt::ALT | Qt::Key_S);
+    _Menu->addAction("Aide (F1)", this, SLOT(slot_ShowHelp()), Qt::Key_F1);
+    _Menu->addAction("Recharger (F2)", this, SLOT(slot_Reload()), Qt::Key_F2);
+    _Menu->addAction("Ouvrir fichier sélectionné (F3)", this, SLOT(slot_OpenSelectedFile()), Qt::Key_F3);
 
     _Menu->addSeparator();
 
@@ -393,4 +396,36 @@ void TreeMainWindow::keyPressEvent(QKeyEvent* event)
             QMainWindow::keyPressEvent(event);
     }
 }
+
+void TreeMainWindow::slot_ShowHelp()
+{
+    QMessageBox::information(this, "Aide", "F1 : Aide\nF2 : Recharger le dossier racine\nF3 : Ouvrir le fichier sélectionné");
+}
+
+void TreeMainWindow::slot_Reload()
+{
+    this->Choisir_Dossier_Racine(_Path_Dossier_Racine);
+}
+
+void TreeMainWindow::slot_OpenSelectedFile()
+{
+    QTreeWidgetItem* currentItem = _TW_Dossier->currentItem();
+    if (currentItem)
+    {
+        QString path = _TW_Dossier->Get_PathName(currentItem);
+        if (QFileInfo(path).isFile())
+        {
+            QDesktopServices::openUrl(QUrl::fromLocalFile(path));
+        }
+        else
+        {
+            QMessageBox::warning(this, "Erreur", "L'élément sélectionné n'est pas un fichier.");
+        }
+    }
+    else
+    {
+        QMessageBox::warning(this, "Erreur", "Aucun fichier sélectionné.");
+    }
+}
+
 

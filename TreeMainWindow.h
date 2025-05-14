@@ -20,7 +20,7 @@ public:
   TreeMainWindow(QWidget *p_Parent = 0);
 
   void Choisir_Dossier_Racine(QString p_Dossier);
-
+  
   void Statut_Fichier(QString p_Path);
 
 public slots:
@@ -30,6 +30,10 @@ public slots:
   void slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_item, int p_Column);
   void slot_Comparer_Cartographies();
   void slot_QUIT();
+  void slot_ShowHelp();
+  void slot_Reload();
+  void slot_OpenSelectedFile();
+
 
 protected:
   void keyPressEvent(QKeyEvent* event) override;
