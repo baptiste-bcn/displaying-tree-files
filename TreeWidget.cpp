@@ -26,6 +26,7 @@ TreeWidget::TreeWidget(QWidget *p_Parent) : QTreeWidget(p_Parent) {
     //-- otherwise adding all children recursively may consume HUGE amount of memory
 
     QTreeWidgetItem *HeaderItem = new QTreeWidgetItem();
+    this->setStyleSheet("QTreeWidget::item:hover { background-color: #e0f7fa; }");
 
     HeaderItem->setText(K_CK, QString(" "));
     HeaderItem->setText(K_FN, QString("File Name"));
