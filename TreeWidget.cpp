@@ -330,6 +330,13 @@ void TreeWidget::slot_currentItemChanged(QTreeWidgetItem *p_Current, QTreeWidget
 //
 // <<<< TreeWidget::Check_Uncheck_AllChildren
 //
+
+/*Cette fonction parcourt récursivement tous les enfants d'un élément QTreeWidgetItem (et leurs sous-enfants)
+pour cocher ou décocher leur case, selon l'état (Checked ou Unchecked) passé en paramètre.
+Si l'élément parent n'existe pas, elle ne fait rien.
+Pour chaque enfant, elle applique l'état voulu, puis appelle la fonction sur les enfants de cet enfant (récursion).
+Cela permet de cocher/décocher tout un sous-arbre d'un coup.
+*/
 void TreeWidget::Check_Uncheck_AllChildren(QTreeWidgetItem *parent, Qt::CheckState state) {
     if (!parent)
         return;

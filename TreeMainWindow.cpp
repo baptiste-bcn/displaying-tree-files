@@ -173,6 +173,12 @@ void TreeMainWindow::slot_Statut_Fichier(QString p_Path) {
 //
 // <<<< TreeMainWindow::slot_PopupContextMenu_TreeView
 //
+/*
+*Affiche un menu contextuel lors d’un clic droit sur un élément de l’arborescence :
+Si c’est un dossier, propose de l’ouvrir.
+Si c’est un fichier, propose de l’ouvrir avec l’application système,
+et s’il s’agit d’un fichier texte, de l’afficher dans l’éditeur.
+    */
 void TreeMainWindow::slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_Item, int) {
     if (!p_Item)
         return;
@@ -199,17 +205,15 @@ void TreeMainWindow::slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_Item, int
     if (FI_Path.isDir()) {
         X_Action_DIR = PopupM.addAction("Ouvrir ce dossier");
     } else if (FI_Path.isFile()) {
-        // TOUJOURS ajouter "Ouvrir avec application système"
         X_Action_Open = PopupM.addAction("Ouvrir avec l'application système");
 
-        // EN PLUS, ajouter "Afficher" si fichier texte connu
         QFile Fd_Test(PathName);
         if (Fd_Test.open(QIODevice::ReadOnly | QIODevice::Text)) {
             QByteArray data = Fd_Test.read(512); // on lit les 512 premiers octets
             Fd_Test.close();
 
             bool isText = true;
-            for (char c : data) {
+            for (char c: data) {
                 if ((c < 32 && c != '\n' && c != '\r' && c != '\t') || c == 127) {
                     isText = false;
                     break;
@@ -220,8 +224,6 @@ void TreeMainWindow::slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_Item, int
                 X_Action_TXT = PopupM.addAction("Afficher le fichier");
             }
         }
-
-
     }
 
     QPoint PM_Point = QCursor::pos() + QPoint(12, 8);
