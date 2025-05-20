@@ -55,13 +55,15 @@ OBJECTS_DIR   = ./
 SOURCES       = TreeAppli.cpp \
 		TreeMainWindow.cpp \
 		TreeWidget.cpp \
-		TextEdit.cpp moc_TreeMainWindow.cpp \
+		TextEdit.cpp qrc_images.cpp \
+		moc_TreeMainWindow.cpp \
 		moc_TreeWidget.cpp \
 		moc_TextEdit.cpp
 OBJECTS       = TreeAppli.o \
 		TreeMainWindow.o \
 		TreeWidget.o \
 		TextEdit.o \
+		qrc_images.o \
 		moc_TreeMainWindow.o \
 		moc_TreeWidget.o \
 		moc_TextEdit.o
@@ -236,7 +238,8 @@ Makefile: tv2.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /us
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/exceptions.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf \
 		/usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf \
-		tv2.pro
+		tv2.pro \
+		images.qrc
 	$(QMAKE) -o Makefile tv2.pro
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/spec_pre.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/common/unix.conf:
@@ -316,6 +319,7 @@ Makefile: tv2.pro /usr/lib/x86_64-linux-gnu/qt5/mkspecs/linux-g++/qmake.conf /us
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/yacc.prf:
 /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/lex.prf:
 tv2.pro:
+images.qrc:
 qmake: FORCE
 	@$(QMAKE) -o Makefile tv2.pro
 
@@ -330,6 +334,7 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
+	$(COPY_FILE) --parents images.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /usr/lib/x86_64-linux-gnu/qt5/mkspecs/features/data/dummy.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents TreeMainWindow.h TreeWidget.h TextEdit.h $(DISTDIR)/
 	$(COPY_FILE) --parents TreeAppli.cpp TreeMainWindow.cpp TreeWidget.cpp TextEdit.cpp $(DISTDIR)/
@@ -356,8 +361,14 @@ check: first
 
 benchmark: first
 
-compiler_rcc_make_all:
+compiler_rcc_make_all: qrc_images.cpp
 compiler_rcc_clean:
+	-$(DEL_FILE) qrc_images.cpp
+qrc_images.cpp: images.qrc \
+		/usr/lib/qt5/bin/rcc \
+		qt.png
+	/usr/lib/qt5/bin/rcc -name images images.qrc -o qrc_images.cpp
+
 compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
@@ -396,7 +407,7 @@ compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean 
+compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_header_clean 
 
 ####### Compile
 
@@ -419,6 +430,9 @@ TreeWidget.o: TreeWidget.cpp TreeWidget.h \
 
 TextEdit.o: TextEdit.cpp TextEdit.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o TextEdit.o TextEdit.cpp
+
+qrc_images.o: qrc_images.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_images.o qrc_images.cpp
 
 moc_TreeMainWindow.o: moc_TreeMainWindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_TreeMainWindow.o moc_TreeMainWindow.cpp

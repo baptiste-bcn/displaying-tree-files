@@ -3,3 +3,4 @@ moc_*
 *.moc
 tv2
 .qmake.stash
+qrc_images.cpp

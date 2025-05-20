@@ -21,7 +21,7 @@ TreeMainWindow::TreeMainWindow(QWidget *p_Parent)
     QToolBar *toolbar = addToolBar("Outils");
     toolbar->addAction(QIcon("icon.png"), "Choisir Dossier", this, SLOT(slot_Choisir_Dossier_Racine()));
     toolbar->addAction("Sauvegarder Cartographie", this, SLOT(slot_Save_TreeMap()));
-    toolbar->addAction("Comparer Dossiers", this, SLOT(slot_Comparer_Cartographies()));
+    toolbar->addAction("Comparer Cartographies", this, SLOT(slot_Comparer_Cartographies()));
     toolbar->addAction("Quitter", this, SLOT(slot_QUIT()));
 
     //-- MENU
@@ -203,11 +203,25 @@ void TreeMainWindow::slot_PopupContextMenu_TreeView(QTreeWidgetItem *p_Item, int
         X_Action_Open = PopupM.addAction("Ouvrir avec l'application système");
 
         // EN PLUS, ajouter "Afficher" si fichier texte connu
-        QString SFX = QString(".%1;").arg(FI_Path.suffix());
+        QFile Fd_Test(PathName);
+        if (Fd_Test.open(QIODevice::ReadOnly | QIODevice::Text)) {
+            QByteArray data = Fd_Test.read(512); // on lit les 512 premiers octets
+            Fd_Test.close();
 
-        if (QString(".cpp;.h;.xpm;.pro;.txt;").contains(SFX.toLower())) {
-            X_Action_TXT = PopupM.addAction("Afficher le fichier");
+            bool isText = true;
+            for (char c : data) {
+                if ((c < 32 && c != '\n' && c != '\r' && c != '\t') || c == 127) {
+                    isText = false;
+                    break;
+                }
+            }
+
+            if (isText) {
+                X_Action_TXT = PopupM.addAction("Afficher le fichier");
+            }
         }
+
+
     }
 
     QPoint PM_Point = QCursor::pos() + QPoint(12, 8);

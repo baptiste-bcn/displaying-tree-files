@@ -5,6 +5,8 @@ DEFINES += QT57
 
 QT += core widgets
 
+RESOURCES += images.qrc
+
 HEADERS += TreeMainWindow.h
 HEADERS += TreeWidget.h
 HEADERS += TextEdit.h
